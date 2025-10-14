@@ -1,3 +1,4 @@
+import numpy as np
 from django.shortcuts import render
 from django.http import StreamingHttpResponse, HttpResponseRedirect, HttpResponse
 from django.forms.models import model_to_dict
@@ -9,6 +10,7 @@ from django.db.models import Q
 
 from .api.CorpusRepository import CorpusRepository
 from .api.TextRepository import TextRepository
+from .api.embedding_utils import get_embeddings, cos_compare, get_chunks
 from .api.ontologyRepository import OntologyRepository
 from.onthology_namespace import *
 from .models import Test
@@ -330,3 +332,41 @@ def deleteObject(request):
     result = repo.delete_object(object_uri)
     repo.close()
     return Response({"deleted": result})
+
+# -----------------------
+#  EMBEDDING API
+# -----------------------
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def build_embeddings(request):
+    """
+    Получает текст(ы), возвращает эмбеддинги.
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    texts = data.get("texts", [])
+    embeddings = get_embeddings(texts)
+    return Response({"embeddings": embeddings.tolist()})
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def compare_embeddings(request):
+    """
+    Сравнивает два эмбеддинга по косинусному сходству.
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    emb1 = np.array(data["emb1"])
+    emb2 = np.array(data["emb2"])
+    similarity = cos_compare(emb1, emb2)
+    return Response({"similarity": similarity})
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def chunk_text(request):
+    """
+    Разбивает текст на чанки.
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    text = data.get("text", "")
+    chunks = get_chunks(text)
+    return Response({"chunks": chunks})

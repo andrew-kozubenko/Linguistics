@@ -34,6 +34,10 @@ from db.views import (
     getObject,
     updateObject,
     deleteObject,
+
+    build_embeddings,
+    compare_embeddings,
+    chunk_text,
 )
 
 urlpatterns = [
@@ -72,4 +76,9 @@ urlpatterns = [
     path('ontology/object/', getObject, name='getObject'),
     path('ontology/object/update/', updateObject, name='updateObject'),
     path('ontology/object/delete/', deleteObject, name='deleteObject'),
+
+    # Embedding
+    path('embeddings/build/', build_embeddings, name='build_embeddings'),
+    path('embeddings/compare/', compare_embeddings, name='compare_embeddings'),
+    path('embeddings/chunk/', chunk_text, name='chunk_text'),
 ]
