@@ -10,6 +10,7 @@ class TextRepository:
             "title": text.title,
             "description": text.description,
             "text": text.text,
+            "embedding": text.embedding,
             "corpus_id": text.corpus.id if text.corpus else None,
             "has_translation": text.has_translation.id if text.has_translation else None
         }
@@ -27,7 +28,9 @@ class TextRepository:
 
     def update_text(self, text_id, **kwargs):
         Text.objects.filter(id=text_id).update(**kwargs)
-        return self.collect_text(Text.objects.get(id=text_id))
+        t = Text.objects.get(id=text_id)
+        t.save()
+        return self.collect_text(t)
 
     def get_text(self, text_id):
         return self.collect_text(Text.objects.get(id=text_id))
