@@ -3,7 +3,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import re
 
-# Загружаем модель один раз
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')
 
 def get_chunks(text: str, chunk_size: int = 200) -> list[str]:
